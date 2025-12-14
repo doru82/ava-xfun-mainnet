@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AVAX Meme Coin Launcher</title>
+  <link rel="icon" href="./favicon.ico" />
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.6.9/dist/ethers.umd.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #E84142 0%, #C62828 100%);
+      min-height: 100vh;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+
+    .container {
+      background: white;
+      border-radius: 24px;
+      padding: 40px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+      text-align: center;
+    }
+
+    .beta-tag {
+      display: block;
+      text-align: center;
+      background: #E84142;
+      color: white;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin: 0 auto 20px auto;
+      width: fit-content;
+    }
+
+    .terms-box {
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+    }
+
+    .terms-box label {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      cursor: pointer;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .terms-box input[type="checkbox"] {
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .limits-info {
+      background: #e3f2fd;
+      border: 2px solid #2196f3;
+      border-radius: 12px;
+      padding: 15px;
+      margin: 15px 0;
+      font-size: 13px;
+      text-align: center;
+    }
+
+    .option-box {
+      background: #f8f9fa;
+      border: 2px solid #e0e0e0;
+      border-radius: 12px;
+      padding: 20px;
+      margin: 15px 0;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .option-box:hover {
+      border-color: #E84142;
+      background: #fff5f5;
+      transform: translateY(-2px);
+    }
+
+    .option-box.selected {
+      border-color: #4CAF50;
+      background: #e8f5e9;
+    }
+
+    .option-box h3 {
+      margin: 0 0 10px 0;
+      color: #333;
+      font-size: 18px;
+    }
+
+    .option-box p {
+      margin: 5px 0;
+      color: #666;
+      font-size: 14px;
+    }
+
+    input, select {
+      margin: 10px 0;
+      padding: 14px;
+      width: 100%;
+      border: 2px solid #ddd;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: border 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #E84142;
+    }
+
+    button {
+      padding: 14px 32px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 10px 0;
+      width: 100%;
+      transition: all 0.3s;
+    }
+
+    button:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    button.disconnect { background: #f44336; }
+    button.disconnect:hover { background: #da190b; }
+
+    #status {
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .success { background: #d4edda; color: #155724; border: 2px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 2px solid #f5c6cb; }
+    .info { background: #d1ecf1; color: #0c5460; border: 2px solid #bee5eb; }
+
+    .wallet-info {
+      margin: 15px 0;
+      padding: 15px;
+      background: #f8f9fa;
+      border-radius: 10px;
+      color: #666;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .hidden { display: none !important; }
+
+    .cost-display {
+      background: #fff3cd;
+      border: 2px solid #ffc107;
+      border-radius: 10px;
+      padding: 15px;
+      margin: 15px 0;
+      text-align: center;
+    }
+
+    .cost-display strong { color: #856404; }
+
+    .disclaimer {
+      background: #f8f9fa;
+      border-top: 2px solid #dee2e6;
+      padding: 20px;
+      margin-top: 30px;
+      border-radius: 0 0 24px 24px;
+      margin-left: -40px;
+      margin-right: -40px;
+      margin-bottom: -40px;
+      text-align: center;
+      font-size: 12px;
+      color: #6c757d;
+      line-height: 1.8;
+    }
+
+    .disclaimer strong { color: #495057; display: block; margin-bottom: 10px; }
+
+    a { color: #E84142; text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <img src="./assets/avaxno.png" alt="Logo" class="logo" />
+
+  <div class="container">
+    <h1>Meme Coin Launcher</h1>
+    <span class="beta-tag" id="modeLabel">Avalanche Mainnet • Permissionless Launcher</span>
+
+    <div class="terms-box">
+      <label>
+        <input type="checkbox" id="acceptTerms" />
+        <span><strong>I understand:</strong> This is Avalanche Mainnet, real AVAX will be spent. Tokens are experimental. No guarantees. Use at your own risk.</span>
+      </label>
+    </div>
+
+    <div class="limits-info">
+      <strong>🛡️ Safety Features:</strong><br />
+      Max 1 trillion supply • Daily limit: 5 launches per user • Min 0.1 AVAX liquidity • Fee: 0.15 AVAX
+    </div>
+
+    <button onclick="connectWallet()" id="connectBtn" disabled>Connect Wallet</button>
+    <button onclick="disconnectWallet()" id="disconnectBtn" class="disconnect hidden">Disconnect</button>
+    <div class="wallet-info hidden" id="walletInfo"></div>
+
+    <div id="launchOptions" class="hidden">
+      <hr style="margin: 20px 0; border: none; border-top: 1px solid #dee2e6;" />
+
+      <div class="option-box" onclick="selectOption('simple')" id="simpleOption">
+        <h3>🎯 Simple Launch</h3>
+        <p>✅ Deploy token only</p>
+        <p>✅ 100% supply to you</p>
+        <p>💰 Cost: 0.15 AVAX</p>
+      </div>
+
+      <div class="option-box selected" onclick="selectOption('liquidity')" id="liquidityOption">
+        <h3>💧 Launch + Auto-Liquidity</h3>
+        <p>✅ Deploy + add liquidity</p>
+        <p>✅ 80% → pool, 20% → you</p>
+        <p>✅ Tradeable instantly!</p>
+        <p>💰 Cost: 0.15 + liquidity AVAX</p>
+      </div>
+    </div>
+
+    <div id="launchForm" class="hidden">
+      <input id="name" placeholder="Token Name (ex: TestMeme)" maxlength="30" />
+      <input id="symbol" placeholder="Symbol (ex: TM)" maxlength="10" />
+      <input id="supply" type="number" placeholder="Total Supply (max 1 trillion)" max="1000000000000" />
+
+      <div id="liquidityInputs" class="hidden">
+        <input id="liquidityAVAX" type="number" step="0.1" value="1" placeholder="AVAX for Liquidity (min 0.1)" />
+
+        <div class="cost-display">
+          <strong>Total Cost:</strong> <span id="totalCost">1.15 AVAX</span><br />
+          <small>(0.15 AVAX fee + <span id="liqAmount">1</span> AVAX liquidity)</small>
+        </div>
+      </div>
+
+      <button onclick="launchToken()" id="launchBtn">Deploy Meme Token</button>
+    </div>
+
+    <div id="status"></div>
+
+    <div class="disclaimer">
+      <strong>⚠️ DISCLAIMER</strong>
+     This is a permissionless smart contract tool.
+Anyone can deploy tokens at their own risk.
+
+No guarantees, no audits, no financial advice.
+You are solely responsible for any token you create or interact with.
+
+The creator of this interface is not liable for losses, exploits,
+rug pulls, or misuse of the deployed contracts.
+
+Use at your own risk. DYOR.
+
+  <script>
+    // MAINNET deployment
+    const factoryAddress = "0x376131E702B2B67d64b9C29571985087cCa0Eb06";
+    const CHAIN_ID = 43114;
+    const CHAIN_ID_HEX = "0xa86a";
+    const EXPLORER_BASE = "https://snowtrace.io";
+
+    const MAINNET_PARAMS = {
+      chainId: CHAIN_ID_HEX,
+      chainName: "Avalanche C-Chain",
+      nativeCurrency: { name: "Avalanche", symbol: "AVAX", decimals: 18 },
+      rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
+      blockExplorerUrls: [EXPLORER_BASE + "/"],
+    };
+
+    const abiFactory = [
+  "function launchToken(string name, string symbol, uint256 totalSupply) external payable returns (address)",
+  "function launchWithLiquidity(string name, string symbol, uint256 totalSupply, uint256 avaxAmount) external payable returns (address)",
+  "event TokenLaunched(address indexed token, address indexed creator, string name, string symbol, uint256 supplyUnits, uint256 liquidityAVAX)"
+];
+
+
+    let provider, signer, userAddress;
+    let selectedMode = "liquidity";
+
+    document.getElementById("acceptTerms").addEventListener("change", function () {
+      document.getElementById("connectBtn").disabled = !this.checked;
+    });
+
+    async function ensureMainnet() {
+      const currentChainId = await window.ethereum.request({ method: "eth_chainId" });
+      if (currentChainId === CHAIN_ID_HEX) return;
+
+      try {
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: CHAIN_ID_HEX }],
+        });
+      } catch (e) {
+        if (e && e.code === 4902) {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [MAINNET_PARAMS],
+          });
+        } else {
+          throw e;
+        }
+      }
+    }
+
+    async function connectWallet() {
+      const statusDiv = document.getElementById("status");
+      const connectBtn = document.getElementById("connectBtn");
+
+      if (!document.getElementById("acceptTerms").checked) {
+        statusDiv.innerHTML = '<div class="error">Please accept terms first!</div>';
+        return;
+      }
+
+      try {
+        if (typeof window.ethereum === "undefined") {
+          statusDiv.innerHTML = '<div class="error">❌ No wallet detected! Install MetaMask.</div>';
+          return;
+        }
+
+        statusDiv.innerHTML = '<div class="info">Connecting...</div>';
+
+await ensureMainnet();
+
+const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+
+provider = new ethers.providers.Web3Provider(window.ethereum);
+signer = provider.getSigner();
+userAddress = accounts[0];
+
+const network = await provider.getNetwork();
+if (network.chainId !== CHAIN_ID) {
+  statusDiv.innerHTML =
+    '<div class="error">Wrong network. Please switch to Avalanche Mainnet.</div>';
+  return;
+}
+
+
+const balance = await provider.getBalance(userAddress);
+const balanceInAvax = ethers.utils.formatEther(balance);
+
+document.getElementById("walletInfo").innerHTML = `
+  ✅ <strong>Connected:</strong> ${userAddress.substring(0,6)}...${userAddress.substring(38)}<br>
+  🌐 <strong>Network:</strong> Avalanche Mainnet<br>
+  💰 <strong>Balance:</strong> ${parseFloat(balanceInAvax).toFixed(4)} AVAX
+`;
+
+        document.getElementById("walletInfo").classList.remove("hidden");
+        document.getElementById("launchOptions").classList.remove("hidden");
+        document.getElementById("launchForm").classList.remove("hidden");
+        connectBtn.classList.add("hidden");
+        document.getElementById("disconnectBtn").classList.remove("hidden");
+        statusDiv.innerHTML = '<div class="success">✅ Ready to launch on Mainnet!</div>';
+
+        updateLiquidityInputs();
+      } catch (error) {
+        console.error("Connection error:", error);
+        statusDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+      }
+    }
+
+    function disconnectWallet() {
+      provider = null;
+      signer = null;
+      userAddress = null;
+
+      document.getElementById("connectBtn").classList.remove("hidden");
+      document.getElementById("connectBtn").disabled = !document.getElementById("acceptTerms").checked;
+      document.getElementById("disconnectBtn").classList.add("hidden");
+      document.getElementById("walletInfo").classList.add("hidden");
+      document.getElementById("launchOptions").classList.add("hidden");
+      document.getElementById("launchForm").classList.add("hidden");
+      document.getElementById("status").innerHTML = "";
+    }
+
+    function selectOption(mode) {
+      selectedMode = mode;
+      document.getElementById("simpleOption").classList.remove("selected");
+      document.getElementById("liquidityOption").classList.remove("selected");
+      document.getElementById(mode + "Option").classList.add("selected");
+      updateLiquidityInputs();
+    }
+
+    function updateLiquidityInputs() {
+      const liquidityInputs = document.getElementById("liquidityInputs");
+      const launchBtn = document.getElementById("launchBtn");
+
+      if (selectedMode === "liquidity") {
+        liquidityInputs.classList.remove("hidden");
+        launchBtn.innerHTML = "Deploy + Add Liquidity";
+        updateCost();
+      } else {
+        liquidityInputs.classList.add("hidden");
+        launchBtn.innerHTML = "Deploy Meme Token";
+      }
+    }
+
+    function updateCost() {
+      const liqAVAX = parseFloat(document.getElementById("liquidityAVAX").value) || 1;
+      const total = 0.15 + liqAVAX;
+      document.getElementById("totalCost").innerHTML = total.toFixed(2) + " AVAX";
+      document.getElementById("liqAmount").innerHTML = liqAVAX.toFixed(2);
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+      const liqInput = document.getElementById("liquidityAVAX");
+      if (liqInput) liqInput.addEventListener("input", updateCost);
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+  const el = document.getElementById("modeLabel");
+  if (el) el.textContent = MODE_LABEL;
+});
+
+
+    function parseTokenLaunched(receipt, contract) {
+      for (const log of receipt.logs) {
+        try {
+          const parsed = contract.interface.parseLog(log);
+          if (parsed && parsed.name === "TokenLaunched") return parsed.args;
+        } catch (e) {}
+      }
+      return null;
+    }
+
+    async function launchToken() {
+      const statusDiv = document.getElementById("status");
+      const launchBtn = document.getElementById("launchBtn");
+
+      if (!signer) {
+        statusDiv.innerHTML = '<div class="error">Connect wallet first!</div>';
+        return;
+      }
+
+      const name = document.getElementById("name").value.trim();
+      const symbol = document.getElementById("symbol").value.trim();
+      const supply = document.getElementById("supply").value;
+
+      if (!name || !symbol || !supply) {
+        statusDiv.innerHTML = '<div class="error">Fill all fields!</div>';
+        return;
+      }
+
+      if (Number(supply) > 1000000000000) {
+        statusDiv.innerHTML = '<div class="error">Max supply is 1 trillion!</div>';
+        return;
+      }
+
+      launchBtn.disabled = true;
+      launchBtn.innerHTML = "Launching...";
+
+      try {
+        await ensureMainnet();
+
+        const contract = new ethers.Contract(factoryAddress, abiFactory, signer);
+
+        if (selectedMode === "simple") {
+          statusDiv.innerHTML = '<div class="info">⏳ Deploying token (simple)...</div>';
+
+          const tx = await contract.launchToken(name, symbol, supply, {
+            value: ethers.utils.parseEther("0.15"),
+          });          
+        statusDiv.innerHTML = `
+  <div class="info">
+    Pending confirmation...<br>
+    Tx: <a href="${EXPLORER_BASE}/tx/${tx.hash}" target="_blank">${tx.hash.slice(0,10)}...</a>
+  </div>
+`;
+
+          const receipt = await tx.wait();
+
+          const ev = parseTokenLaunched(receipt, contract);
+          if (!ev) throw new Error("Could not find TokenLaunched event");
+
+          const tokenAddr = ev.token;
+          function shortAddr(a) {
+  return a.slice(0, 6) + "..." + a.slice(-4);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+   statusDiv.innerHTML = `
+  <div class="success">
+    🎉 Token deployed successfully<br><br>
+
+    <strong>Address:</strong> ${tokenAddr}
+    <button id="copyBtn" style="margin-top:10px;background:#333;">Copy</button>
+    <br><br>
+
+    <a href="${EXPLORER_BASE}/address/${tokenAddr}" target="_blank">
+      View on Snowtrace
+    </a>
+    <br><br>
+    <a href="https://app.pangolin.exchange/#/swap?outputCurrency=${tokenAddr}" target="_blank">
+      Trade on Pangolin
+    </a>
+  </div>
+`;
+
+
+setTimeout(() => {
+  const btn = document.getElementById("copyBtn");
+  if (!btn) return;
+  btn.onclick = async () => {
+    const ok = await copyText(tokenAddr);
+    btn.innerText = ok ? "Copied" : "Copy failed";
+  };
+}, 0);
+
+        } else {
+          const liqAVAX = document.getElementById("liquidityAVAX").value;
+
+          if (parseFloat(liqAVAX) < 0.1) {
+            statusDiv.innerHTML = '<div class="error">Minimum 0.1 AVAX liquidity!</div>';
+            launchBtn.disabled = false;
+            updateLiquidityInputs();
+            return;
+          }
+
+          const totalValue = 0.15 + parseFloat(liqAVAX);
+
+          statusDiv.innerHTML = '<div class="info">⏳ Deploying + adding liquidity...</div>';
+
+          const tx = await contract.launchWithLiquidity(
+            name,
+            symbol,
+            supply,
+            ethers.utils.parseEther(liqAVAX),
+            { value: ethers.utils.parseEther(totalValue.toString()) }
+          );
+
+         statusDiv.innerHTML = `
+  <div class="info">
+    Pending confirmation...<br>
+    Tx: <a href="${EXPLORER_BASE}/tx/${tx.hash}" target="_blank">${tx.hash.slice(0,10)}...</a>
+  </div>
+`;
+
+          const receipt = await tx.wait();
+
+          const ev = parseTokenLaunched(receipt, contract);
+          if (!ev) throw new Error("Could not find TokenLaunched event");
+
+          const tokenAddr = ev.token;
+          function shortAddr(a) {
+  return a.slice(0, 6) + "..." + a.slice(-4);
+}
+
+async function copyText(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+          statusDiv.innerHTML = `
+  <div class="success">
+    Token deployed on Mainnet<br><br>
+    <strong>Address:</strong> ${tokenAddr} 
+    <button id="copyBtn" style="margin-top:10px;background:#333;">Copy</button><br><br>
+    <a href="${EXPLORER_BASE}/address/${tokenAddr}" target="_blank">View on Snowtrace</a>
+  </div>
+`;
+
+setTimeout(() => {
+  const btn = document.getElementById("copyBtn");
+  if (!btn) return;
+  btn.onclick = async () => {
+    const ok = await copyText(tokenAddr);
+    btn.innerText = ok ? "Copied" : "Copy failed";
+  };
+}, 0);
+
+        }
+
+        document.getElementById("name").value = "";
+        document.getElementById("symbol").value = "";
+        document.getElementById("supply").value = "";
+      } catch (error) {
+        console.error("Error:", error);
+        let errorMsg = error.message || "Unknown error";
+        if (errorMsg.includes("Daily limit")) {
+  errorMsg = "Daily launch limit reached. Try again tomorrow or use another wallet.";
+}
+
+
+        if (errorMsg.includes("insufficient funds")) {
+          errorMsg = "Insufficient AVAX for fee + gas.";
+        }
+        if (errorMsg.includes("user rejected") || errorMsg.includes("User rejected")) {
+          errorMsg = "Transaction rejected in wallet.";
+        }
+
+        statusDiv.innerHTML = `<div class="error">❌ ${errorMsg}</div>`;
+      } finally {
+        launchBtn.disabled = false;
+        updateLiquidityInputs();
+      }
+    }
+
+    if (typeof window.ethereum !== "undefined") {
+      window.ethereum.on("accountsChanged", () => location.reload());
+      window.ethereum.on("chainChanged", () => location.reload());
+    }
+  </script>
+</body>
+</html>
+
