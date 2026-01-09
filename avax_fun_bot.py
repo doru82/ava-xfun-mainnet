@@ -160,7 +160,7 @@ Write ONE engaging post. Output ONLY the post text, nothing else. No quotes arou
             post = '\n\n'.join(lines)
 
             # HARD LIMIT for X non-premium
-            post = enforce_x_limit(post, 277)
+            post = enforce_x_limit(post, 240)
 
             print(f"✅ Generated post ({len(post)} chars):\n{post}")
             return post
