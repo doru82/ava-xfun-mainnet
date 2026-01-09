@@ -17,7 +17,7 @@ TYPEFULLY_API_KEY = os.getenv("TYPEFULLY_API_KEY", "")
 SOCIAL_SET_ID = "276434"
 
 # Hard safety buffer for X weighted length (emoji/newlines can count weird)
-X_SAFE_MAX_CHARS = 240
+X_SAFE_MAX_CHARS = 270
 
 # ========================================
 # FETCH AVAX NEWS & DATA
