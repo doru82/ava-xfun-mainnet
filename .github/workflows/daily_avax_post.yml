@@ -1,1 +1,28 @@
+name: Daily AVAX Fun Post
+
+on:
+  schedule:
+    - cron: '0 15 * * *'
+  workflow_dispatch:
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install requests python-dotenv
+      
+      - name: Run AVAX Fun Bot
+        env:
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
+        run: python avax_fun_bot.py
 
