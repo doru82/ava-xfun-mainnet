@@ -145,7 +145,7 @@ Write ONE engaging post. Output ONLY the post text, nothing else. No quotes arou
             data = response.json()
             post = data["choices"][0]["message"]["content"].strip()
             # Clean up any quotes if AI added them
-           post = post.strip('"').strip("'")
+            post = post.strip('"').strip("'")
             # Remove em dash and en dash
             post = post.replace("—", ",").replace("–", ",")
             # Ensure blank lines between paragraphs
