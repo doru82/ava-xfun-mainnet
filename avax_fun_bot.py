@@ -57,7 +57,14 @@ def get_crypto_news():
 # ========================================
 # GENERATE POST WITH GROK
 # ========================================
+def enforce_x_limit(text: str, max_len: int = 277) -> str:
+    if len(text) <= max_len:
+        return text
 
+    # taie sigur, fără să rupă ultimul cuvânt
+    truncated = text[:max_len]
+    return truncated.rsplit(" ", 1)[0]
+    
 def generate_avax_fun_post():
     """Generate post using Grok API."""
     
@@ -94,7 +101,7 @@ STYLE RULES:
 - Ask questions to encourage engagement
 - Use some emojis but don't overdo it (3-5 max)
 - Include a call-to-action
-- LENGTH: 4-6 sentences, medium length post, STRICTLY UNDER 277 characters (including spaces, punctuation, emojis, and all line breaks as \n\n). Before finalizing, internally verify length and shorten by removing words/sentences/emojis if over, targeting 250 max. DO NOT mention or include character count, length info, or any extra text in the output—only the post content
+- LENGTH: Write a concise post that fits X non-premium limits (under 277 characters).
 - Add a BLANK LINE between each idea/paragraph (double line break), ALWAYS leave a BLANK LINE after first sentence
 - NEVER use em dash (—) or en dash (–). Use comma, period, or "and" instead
 - ALWAYS mention the website: avaxfun.net
@@ -151,8 +158,13 @@ Write ONE engaging post. Output ONLY the post text, nothing else. No quotes arou
             # Ensure blank lines between paragraphs
             lines = [line.strip() for line in post.split('\n') if line.strip()]
             post = '\n\n'.join(lines)
-            print(f"✅ Generated post:\n{post}")
+
+            # HARD LIMIT for X non-premium
+            post = enforce_x_limit(post, 277)
+
+            print(f"✅ Generated post ({len(post)} chars):\n{post}")
             return post
+
         else:
             print(f"❌ Grok error: {response.status_code} - {response.text}")
             return None
