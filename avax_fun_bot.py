@@ -95,6 +95,8 @@ STYLE RULES:
 - Use some emojis but don't overdo it (3-5 max)
 - Include a call-to-action
 - LENGTH: 4-6 sentences, medium length post
+- Add a BLANK LINE between each idea/paragraph (double line break)
+- NEVER use em dash (—) or en dash (–). Use comma, period, or "and" instead
 - ALWAYS mention the website: avaxfun.net
 - ALWAYS tag @avax somewhere in the post
 - Can mention @pangolindex when talking about liquidity
@@ -143,7 +145,12 @@ Write ONE engaging post. Output ONLY the post text, nothing else. No quotes arou
             data = response.json()
             post = data["choices"][0]["message"]["content"].strip()
             # Clean up any quotes if AI added them
-            post = post.strip('"').strip("'")
+           post = post.strip('"').strip("'")
+            # Remove em dash and en dash
+            post = post.replace("—", ",").replace("–", ",")
+            # Ensure blank lines between paragraphs
+            lines = [line.strip() for line in post.split('\n') if line.strip()]
+            post = '\n\n'.join(lines)
             print(f"✅ Generated post:\n{post}")
             return post
         else:
