@@ -94,7 +94,7 @@ STYLE RULES:
 - Ask questions to encourage engagement
 - Use some emojis but don't overdo it (3-5 max)
 - Include a call-to-action
-- LENGTH: 4-6 sentences, medium length post, STRICTLY UNDER 277 characters (including spaces, punctuation, emojis, and all line breaks as \n\n). Before final output, ALWAYS count total characters, then automatically shorten by trimming sentences, words, or emojis if over, aiming for 250 max for safety
+- LENGTH: 4-6 sentences, medium length post, STRICTLY UNDER 277 characters (including spaces, punctuation, emojis, and all line breaks as \n\n). Internally count total characters before output and automatically shorten by trimming sentences, words, or emojis if over, aiming for 250 max for safety. NEVER include the character count or any extra text in the output
 - Add a BLANK LINE between each idea/paragraph (double line break), ALWAYS leave a BLANK LINE after first sentence
 - NEVER use em dash (—) or en dash (–). Use comma, period, or "and" instead
 - ALWAYS mention the website: avaxfun.net
