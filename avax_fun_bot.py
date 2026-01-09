@@ -17,7 +17,7 @@ TYPEFULLY_API_KEY = os.getenv("TYPEFULLY_API_KEY", "")
 SOCIAL_SET_ID = "276434"
 
 # Hard safety buffer for X weighted length (emoji/newlines can count weird)
-X_SAFE_MAX_CHARS = 270
+X_SAFE_MAX_CHARS = 277
 
 # ========================================
 # FETCH AVAX NEWS & DATA
@@ -181,7 +181,8 @@ STYLE RULES:
 - 1–3 emojis max
 - Include a call-to-action
 - FORMAT: EXACTLY 4 very short paragraphs (1 sentence each). Separate paragraphs with ONE blank line.
-- Keep it SHORT (X non-premium)
+- TOTAL LENGTH: MAXIMUM 250 characters including spaces and emojis! This is critical.
+- Each paragraph should be 1 SHORT sentence (max 10 words per sentence)
 - NEVER use em dash (—) or en dash (–)
 - MUST include: avaxfun.net
 - MUST include: @avax
