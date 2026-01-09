@@ -123,7 +123,7 @@ Write ONE engaging post. Output ONLY the post text, nothing else. No quotes arou
     }
     
     payload = {
-        "model": "grok-2-latest",
+        "model": "grok-beta",
         "messages": [
             {"role": "user", "content": prompt}
         ],
