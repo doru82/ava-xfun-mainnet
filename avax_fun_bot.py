@@ -179,6 +179,7 @@ STYLE RULES:
 - Educational + a bit of FOMO
 - Ask 1 question
 - 1–3 emojis max
+- NO periods at end of sentences. Use exclamation mark (!) ONLY when truly excited, otherwise no punctuation at end
 - Include a call-to-action
 - FORMAT: EXACTLY 4 very short paragraphs (1 sentence each). Separate paragraphs with ONE blank line.
 - TOTAL LENGTH: MAXIMUM 250 characters including spaces and emojis! This is critical.
